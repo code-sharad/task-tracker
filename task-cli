@@ -1,0 +1,209 @@
+#!/usr/bin/env node
+const fs = require("fs");
+
+// Get the arguments from the command line
+const args = process.argv.slice(2);
+
+if (args.length > 0) {
+    // Initialize task.json file with an empty array
+    if (args[0] === "init") {
+        console.log("init");
+        fs.writeFileSync("task.json", JSON.stringify([]));
+        console.log("Task file created!");
+    }
+
+    // Add a new task
+    if (args[0] === "add") {
+        let tasks = [];
+        if (fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            tasks = JSON.parse(data);
+        }
+        tasks.push({ task: args[1], status: "todo", created_at: new Date() });
+        fs.writeFileSync("task.json", JSON.stringify(tasks));
+        console.log(`Added Task, ${args[0]} ${args[1]}!`);
+    }
+
+    // List tasks based on their status
+    if (args[0] === "list") {
+        // List tasks that are in progress
+        if (args[1] === "in-progress") {
+            if (fs.existsSync("task.json")) {
+                const data = fs.readFileSync("task.json");
+                const tasks = JSON.parse(data);
+                tasks.forEach((task, index) => {
+                    if (task.status === "inprogress") {
+                        console.log(
+                            `${index + 1}. ${task.task} - ${
+                                task.status === "inprogress" ? "In Progress" : ""
+                            }`
+                        );
+                    }
+                });
+            } else {
+                console.log("No task found");
+            }
+        }
+
+        // List tasks that are done
+        if (args[1] === "done") {
+            if (fs.existsSync("task.json")) {
+                const data = fs.readFileSync("task.json");
+                const tasks = JSON.parse(data);
+                tasks.forEach((task, index) => {
+                    if (task.mark_done === 1) {
+                        console.log(
+                            `${index + 1}. ${task.task} - ${
+                                task.done === "done" ? "Done" : ""
+                            }`
+                        );
+                    }
+                });
+            } else {
+                console.log("No task found");
+            }
+        }
+        if (args[1] === "todo") {
+            if (fs.existsSync("task.json")) {
+                const data = fs.readFileSync("task.json");
+                const tasks = JSON.parse(data);
+                tasks.forEach((task, index) => {
+                    if (task.status === "todo") {
+                        console.log(
+                            `${index + 1}. ${task.task} - ${
+                                task.status === "todo" ? "Todo" : ""
+                            }`
+                        );
+                    }
+                });
+            } else {
+                console.log("No task found");
+            }
+        }
+
+        // List all tasks if no specific status is provided
+        if (args[1] === undefined && fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            const tasks = JSON.parse(data);
+            tasks.forEach((task, index) => {
+                if (task.status === "todo") {
+                    console.log(
+                        `${index + 1}. ${task.task} - ${task.status ? "Todo" : ""}`
+                    );
+                }
+                if (task.status === "done") {
+                    console.log(
+                        `${index + 1}. ${task.task} - ${task.status ? "Done" : ""}`
+                    );
+                }
+                if (task.status === "inprogress") {
+                    console.log(
+                        `${index + 1}. ${task.task} - ${task.status ? "In Progress" : ""}`
+                    );
+                }
+            });
+        }
+    }
+
+    // Mark a task as done
+    if (args[0] === "mark-done") {
+        if (fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            const tasks = JSON.parse(data);
+            tasks[args[1] - 1].status = "done";
+            fs.writeFileSync("task.json", JSON.stringify(tasks));
+            console.log(`Marked Task, ${args[1]} as done!`);
+        } else {
+            console.log("No task found");
+        }
+    }
+
+    // Delete a task
+    if (args[0] === "delete") {
+        console.log("delete");
+        if (fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            const tasks = JSON.parse(data);
+            tasks.splice(args[1] - 1, 1);
+            fs.writeFileSync("task.json", JSON.stringify(tasks));
+            console.log(`Deleted Task, ${args[1]}!`);
+        } else {
+            console.log("No task found");
+        }
+    }
+
+    // Update a task
+    if (args[0] === "update") {
+        console.log("update");
+        if (fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            const tasks = JSON.parse(data);
+            tasks[args[1] - 1].task = args[2];
+            tasks[args[1] - 1].updated_at = new Date();
+            fs.writeFileSync("task.json", JSON.stringify(tasks));
+            console.log(`Updated Task, ${args[1]}!`);
+        } else {
+            console.log("No task found");
+        }
+    }
+
+    // Mark a task as in progress
+    if (args[0] === "mark-in-progress") {
+        if (fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            const tasks = JSON.parse(data);
+            tasks[args[1] - 1].status = "inprogress";
+            fs.writeFileSync("task.json", JSON.stringify(tasks));
+            console.log(`Marked Task, ${args[1]} as in progress!`);
+        } else {
+            console.log("No task found");
+        }
+    }
+
+    // Mark a task as done (duplicate of mark-done)
+    if (args[0] === "done") {
+        if (fs.existsSync("task.json")) {
+            const data = fs.readFileSync("task.json");
+            const tasks = JSON.parse(data);
+            tasks[args[1] - 1].status = "done";
+            fs.writeFileSync("task.json", JSON.stringify(tasks));
+            console.log(`Marked Task, ${args[1]} as done!`);
+        } else {
+            console.log("No task found");
+        }
+    }
+
+    // Clear all tasks
+    if (args[0] === "clear") {
+        if (fs.existsSync("task.json")) {
+            fs.writeFileSync("task.json", JSON.stringify([]));
+            console.log(`Cleared all tasks!`);
+        } else {
+            console.log("No task found");
+        }
+    }
+
+    // Show help information
+    if (args[0] === "help") {
+        console.log("");
+        console.log("task-cli <command> <task>");
+        console.log("");
+        console.log("Commands:");
+        console.log("init - Initialize task.json file");
+        console.log("add - Add a task");
+        console.log("list - List all tasks");
+        console.log("mark-done - Mark a task as done");
+        console.log("delete - Delete a task");
+        console.log("update - Update a task");
+        console.log("mark-in-progress - Mark a task as in progress");
+        console.log("done - Mark a task as done");
+        console.log("clear - Clear all tasks");
+        console.log("help - Show help");
+        console.log("");
+    }
+} else {
+    // Show usage information if no arguments are provided
+    console.log("");
+    console.log("task-cli <command> <task>,\n type task-cli help for more info");
+    console.log("");
+}
