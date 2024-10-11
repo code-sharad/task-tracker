@@ -23,11 +23,12 @@ Task Tracker is a simple and efficient tool to manage your daily tasks and to-do
 
 ## Usage 🚀
 
-1. Start the development server:
-    ```sh
-    npm start
-    ```
-2. Open your browser and go to `http://localhost:3000` 🌐
+To get started with Task Tracker, use the following command to see the available options and commands:
+
+```./task-cli help```
+
+This will display a list of commands and their descriptions to help you manage your tasks efficiently.
+
 
 ## Contributing 🤝
 
